@@ -33,8 +33,10 @@ public class MandelbrotThread implements Runnable {
         try {
             for (int y = y_inicial; y < y_final; y++) {
                 for (int x = x_inicial; x < x_final; x++) {
-                    graphics.setColor(mandelbrot.pintaPonto(x, y, interacoes, posicaoFractal, zoom));
-                    graphics.drawLine(x, y, x + 1, y);
+                    synchronized (graphics) {
+                        graphics.setColor(mandelbrot.pintaPonto(x, y, interacoes, posicaoFractal, zoom));
+                        graphics.drawLine(x, y, x + 1, y);
+                    }
                 }
             }
         } catch (RemoteException e) {

@@ -8,6 +8,8 @@ public class MandelbrotClient {
     public static void main(String[] args) {
         try {
             Mandelbrot mandelbrot = (Mandelbrot) Naming.lookup("//localhost:2020/MandelbrotService");
+            Mandelbrot mandelbrot2 = (Mandelbrot) Naming.lookup("//localhost:2020/MandelbrotService2");
+
             MandelBrotApplet applet = new MandelBrotApplet();
 
             JFrame frame = new JFrame();
@@ -17,7 +19,7 @@ public class MandelbrotClient {
             frame.setFocusable(true);
             frame.setVisible(true);
 
-            applet.init(mandelbrot);
+            applet.init(mandelbrot, mandelbrot2);
             applet.start();
         } catch (Exception e) {
             e.printStackTrace();

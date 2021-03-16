@@ -27,8 +27,9 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
     private int interacoes;
     private int py;
     private Mandelbrot mandelbrot;
+    private Mandelbrot mandelbrot2;
 
-    public void init(Mandelbrot mandelbrot) {
+    public void init(Mandelbrot mandelbrot, Mandelbrot mandelbrot2) {
         offscreen = this.createImage(TAMANHO_X, TAMANHO_Y);
         posicaoFractal = new Vetor2D(-0.8, 0);
         posicaoJanela = new Vetor2D((double) TAMANHO_X / 2, (double) TAMANHO_Y / 2);
@@ -39,13 +40,13 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.mandelbrot = mandelbrot;
-
+        this.mandelbrot2 = mandelbrot2;
     }
 
     public void start() {
         Graphics i = offscreen.getGraphics();
         Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
-        Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
+        Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot2, interacoes, posicaoFractal, zoom);
 
         Thread thread1 = new Thread(mandelbrotThread1);
         Thread thread2 = new Thread(mandelbrotThread2);
@@ -59,7 +60,7 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
         Graphics i = offscreen.getGraphics();
         if (recalcular) {
             Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
-            Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
+            Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot2, interacoes, posicaoFractal, zoom);
 
             Thread thread1 = new Thread(mandelbrotThread1);
             Thread thread2 = new Thread(mandelbrotThread2);
