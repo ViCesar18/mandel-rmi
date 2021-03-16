@@ -1,3 +1,5 @@
+package mandelbrot;
+
 public class Vetor2D {
   public double x;
   public double y;
@@ -14,7 +16,6 @@ public class Vetor2D {
 
   public double comprimento() {
     double soma = Math.pow(x, 2) + Math.pow(y, 2);
-
     return Math.sqrt(soma);
   }
 }
