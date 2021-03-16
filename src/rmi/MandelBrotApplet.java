@@ -45,8 +45,8 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
 
     public void start() {
         Graphics i = offscreen.getGraphics();
-        Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
-        Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot2, interacoes, posicaoFractal, zoom);
+        Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, null, mandelbrot, interacoes, posicaoFractal, zoom);
+        Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, null, mandelbrot2, interacoes, posicaoFractal, zoom);
 
         Thread thread1 = new Thread(mandelbrotThread1);
         Thread thread2 = new Thread(mandelbrotThread2);
@@ -59,8 +59,8 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
     public void update(Graphics g) {
         Graphics i = offscreen.getGraphics();
         if (recalcular) {
-            Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
-            Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot2, interacoes, posicaoFractal, zoom);
+            Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, g, mandelbrot, interacoes, posicaoFractal, zoom);
+            Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, g, mandelbrot2, interacoes, posicaoFractal, zoom);
 
             Thread thread1 = new Thread(mandelbrotThread1);
             Thread thread2 = new Thread(mandelbrotThread2);
