@@ -7,11 +7,10 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.Serial;
+import java.rmi.RemoteException;
 
 public class MandelBrotApplet extends Applet implements MouseListener, MouseMotionListener {
 
-    @Serial
     private static final long serialVersionUID = 1L;
     private static final int TAMANHO_X = 640;
     private static final int TAMANHO_Y = 480;
@@ -26,11 +25,13 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
     private double fatorZoom;
     private int interacoes;
     private int py;
+    private Ponto p;
 
     /**
      * Inicializa recursos utilizados pelo Applet
      */
-    public void init() {
+    public void init(Ponto p) {
+        this.p = p;
         offscreen = this.createImage(TAMANHO_X, TAMANHO_Y);
 
         posicaoFractal = new Vetor2D(-0.8, 0);
@@ -57,32 +58,14 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
 
         for (int x = 0; x < TAMANHO_X; x++) {
             for (int y = 0; y < TAMANHO_Y; y++) {
-                i.setColor(pintaPonto(x, y));
+                try {
+                    i.setColor(p.pintaPonto(x, y, interacoes, posicaoFractal, zoom));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 i.drawLine(x, y, x + 1, y);
             }
         }
-    }
-
-    /**
-     * Pinta um ponto do fractal
-     */
-    private Color pintaPonto(int x, int y) {
-
-        Vetor2D z = new Vetor2D();
-        int n = 0;
-        double a;
-
-        for (; n < interacoes && z.comprimento() < 3; n++) {
-            a = z.x * z.x - (z.y * z.y) + posicaoFractal.x
-                    + ((x - MEIO_X) / zoom);
-            z.y = z.x * z.y * 2 + posicaoFractal.y + ((y - MEIO_Y) / zoom);
-            z.x = a;
-        }
-
-        return (n == interacoes) ? new Color(0x000000) :
-                new Color((int) ((Math.cos(n / 10.0f) + 1.0f) * 127.0f),
-                        (int) ((Math.cos(n / 20.0f) + 1.0f) * 127.0f),
-                        (int) ((Math.cos(n / 300.0f) + 1.0f) * 127.0f));
     }
 
     /**
@@ -96,11 +79,15 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
         if (recalcular) {
             for (int y = 0; y < TAMANHO_Y; y++) {
                 for (int x = 0; x < TAMANHO_X; x++) {
-                    corPixel = pintaPonto(x, y);
-                    i.setColor(corPixel);
-                    i.drawLine(x, y, x + 1, y);
-                    g.setColor(corPixel);
-                    g.drawLine(x, y, x + 1, y);
+                    try {
+                        corPixel = p.pintaPonto(x, y, interacoes, posicaoFractal, zoom);
+                        i.setColor(corPixel);
+                        i.drawLine(x, y, x + 1, y);
+                        g.setColor(corPixel);
+                        g.drawLine(x, y, x + 1, y);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -118,7 +105,7 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
         /* Desenha retangulo de zoom */
         if (janelaZoom) {
             g.setColor(new Color(0xFFFF00));
-            g.drawRect((int) (posicaoJanela.x - (MEIO_X / fatorZoom)),
+             g.drawRect((int) (posicaoJanela.x - (MEIO_X / fatorZoom)),
                     (int) (posicaoJanela.y - (MEIO_Y / fatorZoom)),
                     (int) (2.0f * (MEIO_X / fatorZoom)),
                     (int) (2.0f * (MEIO_Y / fatorZoom)));

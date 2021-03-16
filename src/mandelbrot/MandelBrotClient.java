@@ -1,10 +1,19 @@
 package mandelbrot;
 
 import java.awt.Dimension;
+import java.rmi.Naming;
 import javax.swing.JFrame;
 
-public class Main {
+public class MandelBrotClient {
     public static void main(String[] args) {
+        Ponto p = null;
+
+        try{
+            p = (Ponto) Naming.lookup("//localhost:2020/MandelBrot");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         MandelBrotApplet applet = new MandelBrotApplet();
 
         JFrame frame = new JFrame();
@@ -14,7 +23,7 @@ public class Main {
         frame.setFocusable(true);
         frame.setVisible(true);
 
-        applet.init();
+        applet.init(p);
         applet.start();
     }
 }
