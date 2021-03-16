@@ -1,3 +1,5 @@
+package exemplo;
+
 import java.rmi.Naming;
 
 public class CalculatorClient {
