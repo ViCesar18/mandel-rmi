@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.Serial;
-import java.rmi.RemoteException;
 
 public class MandelBrotApplet extends Applet implements MouseListener, MouseMotionListener {
 
@@ -29,80 +28,50 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
     private int py;
     private Mandelbrot mandelbrot;
 
-    /**
-     * Inicializa recursos utilizados pelo Applet
-     */
-
     public void init(Mandelbrot mandelbrot) {
         offscreen = this.createImage(TAMANHO_X, TAMANHO_Y);
-
         posicaoFractal = new Vetor2D(-0.8, 0);
         posicaoJanela = new Vetor2D((double) TAMANHO_X / 2, (double) TAMANHO_Y / 2);
-
         zoom = TAMANHO_X * 0.125296875;
         fatorZoom = 2.178;
-
-        interacoes = (int) ((2048 - TAMANHO_X) * 0.049715909 * (Math.log(zoom) / Math
-                .log(10)));
-
+        interacoes = (int) ((2048 - TAMANHO_X) * 0.049715909 * (Math.log(zoom) / Math.log(10)));
         this.resize(TAMANHO_X, TAMANHO_Y);
-
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.mandelbrot = mandelbrot;
 
     }
 
-    /**
-     * Inicia applet e pinta o fractal pela primeira vez
-     */
     public void start() {
-        try {
-            Graphics i = offscreen.getGraphics();
-            for (int x = 0; x < TAMANHO_X; x++) {
-                for (int y = 0; y < TAMANHO_Y; y++) {
-                    i.setColor(mandelbrot.pintaPonto(x, y, interacoes, posicaoFractal, zoom));
-                    i.drawLine(x, y, x + 1, y);
-                }
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        Graphics i = offscreen.getGraphics();
+        Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
+        Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
+
+        Thread thread1 = new Thread(mandelbrotThread1);
+        Thread thread2 = new Thread(mandelbrotThread2);
+
+        thread1.start();
+        thread2.start();
+
     }
 
-    /**
-     * Recalcula imagem do fractal e desenha double buffer
-     */
     public void update(Graphics g) {
-        try {
-            Graphics i = offscreen.getGraphics();
-            Color corPixel;
+        Graphics i = offscreen.getGraphics();
+        if (recalcular) {
+            Runnable mandelbrotThread1 = new MandelbrotThread(0, 0, TAMANHO_X, MEIO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
+            Runnable mandelbrotThread2 = new MandelbrotThread(0, MEIO_Y, TAMANHO_X, TAMANHO_Y, i, mandelbrot, interacoes, posicaoFractal, zoom);
 
-            if (recalcular) {
-                for (int y = 0; y < TAMANHO_Y; y++) {
-                    for (int x = 0; x < TAMANHO_X; x++) {
-                        corPixel = mandelbrot.pintaPonto(x, y, interacoes, posicaoFractal, zoom);
-                        i.setColor(corPixel);
-                        i.drawLine(x, y, x + 1, y);
-                        g.setColor(corPixel);
-                        g.drawLine(x, y, x + 1, y);
-                    }
-                }
-            }
-            paint(g);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            Thread thread1 = new Thread(mandelbrotThread1);
+            Thread thread2 = new Thread(mandelbrotThread2);
+
+            thread1.start();
+            thread2.start();
         }
+        paint(g);
     }
 
-    /**
-     * Pinta double buffer na saida grafica e desenha o retangulo de zoom
-     */
     public void paint(Graphics g) {
-
         g.drawImage(offscreen, 0, 0, this);
-
-        /* Desenha retangulo de zoom */
         if (janelaZoom) {
             g.setColor(new Color(0xFFFF00));
             g.drawRect((int) (posicaoJanela.x - (MEIO_X / fatorZoom)),
@@ -113,11 +82,7 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
 
     }
 
-    /**
-     * Metodo chamado no evento de clique do mouse. Efetua zoom in ou out dependendo do botao
-     */
     public void mouseClicked(MouseEvent e) {
-
         if (e.getButton() == MouseEvent.BUTTON1) {
             posicaoFractal.x += ((posicaoJanela.x - MEIO_X) / zoom);
             posicaoFractal.y += ((posicaoJanela.y - MEIO_Y) / zoom);
@@ -132,72 +97,44 @@ public class MandelBrotApplet extends Applet implements MouseListener, MouseMoti
             posicaoFractal.y = 0;
             zoom = TAMANHO_X * 0.125296875;
         }
-
         interacoes = (int) ((2048 - TAMANHO_X) * 0.049715909 * (Math.log(zoom) / Math
                 .log(10)));
-
         recalcular = true;
         this.repaint();
     }
 
-    /**
-     * Quando o mouse entra na area do applet
-     */
     public void mouseEntered(MouseEvent e) {
         janelaZoom = true;
     }
 
-    /**
-     * Quando o mouse sai da area do applet
-     */
     public void mouseExited(MouseEvent e) {
         janelaZoom = false;
-
         recalcular = false;
         this.repaint();
     }
 
-    /**
-     * Metodo nao utilizado
-     */
     public void mousePressed(MouseEvent e) {
-
     }
 
-    /**
-     * Metodo nao utilizado
-     */
     public void mouseReleased(MouseEvent e) {
-
     }
 
-    /**
-     * Metodo chamado no evento de arrastar do mouse. causa o redimensionamento do retangulo de zoom
-     */
     public void mouseDragged(MouseEvent e) {
-
         if (py > e.getY()) {
             fatorZoom *= 0.98f;
         } else if (py < e.getY()) {
             fatorZoom *= 1.02f;
         }
-
         py = e.getY();
-
         recalcular = false;
         this.repaint();
     }
 
-    /**
-     * Metodo chamado no evento de movimento do mouse. Reposiciona o retangulo de zoom.
-     */
     public void mouseMoved(MouseEvent e) {
         posicaoJanela.x = e.getX();
         py = e.getY();
         posicaoJanela.y = e.getY();
-
         recalcular = false;
         this.repaint();
     }
-
 }

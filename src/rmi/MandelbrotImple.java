@@ -32,4 +32,6 @@ public class MandelbrotImple extends UnicastRemoteObject implements Mandelbrot {
                         (int) ((Math.cos(n / 20.0f) + 1.0f) * 127.0f),
                         (int) ((Math.cos(n / 300.0f) + 1.0f) * 127.0f));
     }
+
+
 }
