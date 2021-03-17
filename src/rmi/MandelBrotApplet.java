@@ -1,15 +1,12 @@
 package rmi;
 
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.Serial;
 
-public class MandelBrotApplet extends Applet implements MouseListener, MouseMotionListener {
+public class MandelBrotApplet extends Panel implements MouseListener, MouseMotionListener {
 
     @Serial
     private static final long serialVersionUID = 1L;
