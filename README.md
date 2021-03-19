@@ -8,7 +8,7 @@ Vincícius Cesar Dos Santos - 201800560288
 
 ## Modo de uso
 
-Nota: o desenvolvimento da aplicação foi feito utilizando a IDE IntelliJ IDEA, é recomendável que a execução seja feita nela ou em outra IDE.
+Nota: o desenvolvimento da aplicação foi feito com Java 15 (JDK 15), utilizando a IDE IntelliJ IDEA, é recomendável que a execução seja feita nela ou em outra IDE.
 
 * O primeiro passo é executar a classe MandelbrotServer (que possuí um método main).
 
