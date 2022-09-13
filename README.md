@@ -1,4 +1,5 @@
-# Implementação de plotagem dinâmica do Mandelbrot Set utilizando RMI
+# Implementação de plotagem dinâmica do Mandelbrot Set utilizando RMI (_Mandelbrot Set dynamic plotting implementation using RMI
+### _Mandelbrot Set dynamic plotting implementation using RMI_
 
 ## Autores
 
